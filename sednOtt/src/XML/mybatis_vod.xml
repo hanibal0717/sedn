@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+			PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+			"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="XML.mybatis_vod">
+	<select id="topData" resultType="String" >	
+		select idx from tb_sedn_data where sdStyle='Vod' order by idx desc limit 0,1; 
+	</select>
+	
+	<select id="catchMenuText" resultType="String" parameterType="String">	
+		select categoryName from tb_category_define where categoryCode=#{catchMenuCode}; 
+	</select>
+	
+	<select id="categoryList" resultType="inu.sedn.model.CategoryDTO" parameterType="String">	
+		select categoryCode,categoryName from tb_category_define where categoryType=#{categoryType} order by categoryCode asc; 
+	</select>
+	
+	<select id="dataView" resultType="inu.sedn.model.SednDataDTO" parameterType="String">	
+		select * from tb_sedn_data where idx=#{idx}; 
+	</select>
+	
+	<select id="dataTotalCount" resultType="int" parameterType="java.util.Map">
+	select count(idx) from tb_sedn_data where 1=1 
+	<if test='categoryCode != ""'>
+	 and sdCategory=#{categoryCode} 
+	</if>
+	<if test='sword != ""'>
+    and (sdTitle like concat('%',#{sword},'%') or sdContent like concat('%',#{sword},'%'))
+	</if>
+	 order by idx desc 
+	</select>
+	
+	
+	<select id="dataList" resultType="inu.sedn.model.SednDataDTO" parameterType="java.util.Map">	
+	select * from tb_sedn_data where 1=1 
+	<if test='categoryCode != ""'>
+	 and sdCategory=#{categoryCode} 
+	</if>
+	<if test='sword != ""'>
+    and (sdTitle like concat('%',#{sword},'%') or sdContent like concat('%',#{sword},'%'))
+	</if>
+	 order by idx desc limit #{start},#{end}
+	</select>
+	
+	<insert id="insertVodData" parameterType="inu.sedn.model.SednDataDTO">
+		insert into tb_sedn_data 
+		(idx, sdCategory, sdStyle, sdCreateDate, sdOpenDate, sdVodbox, sdImgbox, sdLivebox, sdMetabox, sdFilebox, sdTitle, sdContent, sdCount, sdDelflag, parent, depth, indent) 
+		values 
+		(null,#{sdCategory}, 'Vod', #{sdCreateDate}, #{sdOpenDate}, #{sdVodbox}, #{sdImgbox},'' ,#{sdMetabox} ,'', #{sdTitle} , #{sdContent}, 0, 0, 0, 0, 0);
+	</insert>
+	
+	<update id="imageUpdate" parameterType="java.util.Map">
+	update tb_sedn_data set
+	sdImgbox=#{originChName}
+	where idx=#{sdIdx}
+	</update>
+	
+	<delete id="dataDelete" parameterType="int">
+		delete from tb_sedn_data  where idx=#{idx}
+	</delete>
+	
+	<update id="dataUpdate" parameterType="inu.sedn.model.SednDataDTO">
+		update tb_sedn_data set
+		sdCategory=#{sdCategory},
+		sdOpenDate=#{sdOpenDate},
+		sdTitle=#{sdTitle},
+		sdContent=#{sdContent}
+		where idx=#{idx}
+	</update>
+</mapper>

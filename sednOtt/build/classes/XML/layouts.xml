@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" 
+         "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+  <tiles-definitions>	
+	<!-- template에 최상위 페이지명-->
+	<definition name="sedn-tiles" template="/WEB-INF/sedn/sednTemplate.jsp">
+		<put-attribute name="header" value="/WEB-INF/sedn/top.jsp"/>
+		<put-attribute name="left" value="/WEB-INF/sedn/left.jsp"/>
+		<put-attribute name="body" value=""/>
+	</definition>
+	<definition name="*.sedn" extends="sedn-tiles">
+		<put-attribute name="body" value="/WEB-INF/{1}.jsp"/>
+	</definition>
+	<definition name="*/*.sedn" extends="sedn-tiles">
+		<put-attribute name="body" value="/WEB-INF/{1}/{2}.jsp"/>
+	</definition>	
+	<definition name="*/*/*.sedn" extends="sedn-tiles">
+		<put-attribute name="body" value="/WEB-INF/{1}/{2}/{3}.jsp"/>
+	</definition>
+	
+	<definition name="user-tiles" template="/WEB-INF/template/userTemplate.jsp">
+  		<put-attribute name="userTemplate"   value="" />
+ 	</definition>
+	<definition name="*.user" extends="user-tiles">
+  		<put-attribute name="userTemplate" value="/WEB-INF/{1}.jsp" />
+ 	</definition>
+ 	<definition name="*/*.user" extends="user-tiles">
+  		<put-attribute name="userTemplate"   value="/WEB-INF/{1}/{2}.jsp" />
+ 	</definition>
+ 	<definition name="*/*/*.user" extends="user-tiles">
+  		<put-attribute name="userTemplate"   value="/WEB-INF/{1}/{2}/{3}.jsp" />
+ 	</definition>
+
+
+	<definition name="data-tiles" template="/WEB-INF/data/dataTemplate.jsp">
+  		<put-attribute name="dataTemplate"   value="" />
+ 	</definition>
+	<definition name="*.data" extends="data-tiles">
+  		<put-attribute name="dataTemplate" value="/WEB-INF/{1}.jsp" />
+ 	</definition>
+ 	<definition name="*/*.data" extends="data-tiles">
+  		<put-attribute name="dataTemplate"   value="/WEB-INF/{1}/{2}.jsp" />
+ 	</definition>
+ 	<definition name="*/*/*.data" extends="data-tiles">
+  		<put-attribute name="dataTemplate"   value="/WEB-INF/{1}/{2}/{3}.jsp" />
+ 	</definition>
+ 	
+ 	<definition name="view-tiles" template="/WEB-INF/views/viewTemplate.jsp">
+  		<put-attribute name="viewTemplate"   value="" />
+ 	</definition>
+	<definition name="*.view" extends="view-tiles">
+  		<put-attribute name="viewTemplate" value="/WEB-INF/{1}.jsp" />
+ 	</definition>
+ 	<definition name="*/*.view" extends="view-tiles">
+  		<put-attribute name="viewTemplate"   value="/WEB-INF/{1}/{2}.jsp" />
+ 	</definition>
+ 	<definition name="*/*/*.view" extends="view-tiles">
+  		<put-attribute name="viewTemplate"   value="/WEB-INF/{1}/{2}/{3}.jsp" />
+ 	</definition>
+</tiles-definitions>

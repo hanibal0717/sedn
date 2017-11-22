@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+	
+	<!-- viewResolver -->
+    <bean id="vewResolver"
+    	class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+    	<property name="viewClass" value="org.springframework.web.servlet.view.JstlView" /> 	
+   		<property name="prefix" value="/WEB-INF/" />
+   		<property name="suffix" value=".jsp" />
+   		<property name="contentType" value="text/html; charset=UTF-8"/>
+   	</bean>
+   	
+   	
+	<!-- Spring  tiles  -->
+	  <bean id="tilesConfigurer" class="org.springframework.web.servlet.view.tiles2.TilesConfigurer">
+		<property name="definitions">
+			<list>
+				<value>classpath:XML/layouts.xml</value>
+			</list>
+		</property>	
+	</bean>	 
+	
+	 <!--(1) use View for tails- ViewResolver -->		
+	<bean  class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+		<property name="order" value="0"/>  
+		<!-- .jsp도 view로 사용하기 위해 우선순위를 가장먼저--> 
+		<property name="viewClass" value="org.springframework.web.servlet.view.tiles2.TilesView"/>
+		
+   </bean>
+   <!--(2) use jsp for tail InternalResourceCiewResolver-->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver" >
+    	<property name="order" value="1"/>
+    </bean>	
+    
+    <!--  max file upload -->
+    <bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver" >
+		<property name="maxUploadSize"  value="4073741824"/>
+	</bean>
+	
+	<!-- interceptor -->
+     <bean id="sessionInterceptor" class="inu.sedn.interceptor.SessionInterceptor" />
+    	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+		<property name="interceptors">
+			<list>
+				<ref bean="sessionInterceptor"/>
+			</list>
+		</property>
+		</bean> 
+	<!-- resources(.properties) use -->
+ 	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" >
+		<property name="locations">
+			<list>
+				<value>classpath:resources/DatabaseConnect.properties</value>
+				<value>classpath:resources/ServerInfo.properties</value>
+				<value>classpath:resources/FtpInfo.properties</value>
+				<value>classpath:resources/Paging.properties</value>
+				<value>classpath:resources/Path.properties</value>
+			</list>
+		</property>	
+	</bean> 
+	
+ 	<!-- mybatis -->
+	 <bean id="dataSourceByJdbc" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="${jdbc.driver}"/>
+		<property name="url" value="${jdbc.url}"/>
+		<property name="username" value="${jdbc.username}"/>
+		<property name="password" value="${jdbc.password}"/>
+   </bean>
+   <bean id="sqlFactory" class="org.mybatis.spring.SqlSessionFactoryBean" 
+	p:dataSource-ref="dataSourceByJdbc">
+		<property name="mapperLocations">
+			<list>
+				<value>classpath:XML/mybatis_adminAccount.xml</value>
+				<value>classpath:XML/mybatis_category.xml</value>
+				<value>classpath:XML/mybatis_vod.xml</value>
+				<value>classpath:XML/mybatis_live.xml</value>
+				<value>classpath:XML/mybatis_log.xml</value>
+				<value>classpath:XML/mybatis_board.xml</value>
+			</list>
+		</property>
+	</bean>
+	<bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg ref="sqlFactory" />
+	</bean>
+	
+	<!-- mybatis OTT-->
+	 <bean id="dataSourceByJdbcOTT" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="${jdbc.driverOTT}"/>
+		<property name="url" value="${jdbc.urlOTT}"/>
+		<property name="username" value="${jdbc.usernameOTT}"/>
+		<property name="password" value="${jdbc.passwordOTT}"/>
+   </bean>
+   <bean id="sqlFactoryOTT" class="org.mybatis.spring.SqlSessionFactoryBean" 
+	p:dataSource-ref="dataSourceByJdbcOTT">
+		<property name="mapperLocations">
+			<list>
+				<value>classpath:XML/mybatis_ott.xml</value>
+			</list>
+		</property>
+	</bean>
+	<bean id="sqlSessionTemplateOTT" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg ref="sqlFactoryOTT" />
+	</bean>
+	
+	
+	<bean id="adminAccountDAO" class="inu.sedn.dao.AdminAccountDAO" p:sqlFactory-ref="sqlFactory" p:sqlTemplate-ref="sqlSessionTemplate"/>
+    <bean id="adminAccountController" class="inu.sedn.controller.AdminAccountController">
+    	<property name="dao" ref="adminAccountDAO"/>
+    </bean>
+	
+	
+	<bean id="mainController" class="inu.sedn.controller.MainController">
+	</bean>
+	
+	<bean id="vodDAO" class="inu.sedn.dao.VodDAO" p:sqlFactory-ref="sqlFactory" p:sqlTemplate-ref="sqlSessionTemplate"/>
+	<bean id="vodController" class="inu.sedn.controller.VodController">
+		<property name="dao" ref="vodDAO"/>
+		<property name="webserver" value="${webserver}"/>
+		<property name="webserverIp" value="${webserverIp}"/>
+		<property name="mediaserver" value="${mediaserver}"/>
+		<property name="mediaserverIp" value="${mediaserverIp}"/>
+		<property name="mediaFtpUser" value="${mediaFtpUser}"/>
+		<property name="mediaFtpPw" value="${mediaFtpPw}"/>
+		<property name="pageSize" value="${pageSize}"/>
+		<property name="blockPage" value="${blockPage}"/>
+		<property name="webPath" value="${webPath}"/>
+		<property name="ftpPath" value="${ftpPath}"/>
+	</bean>
+	
+	<bean id="liveDAO" class="inu.sedn.dao.LiveDAO" p:sqlFactory-ref="sqlFactory" p:sqlTemplate-ref="sqlSessionTemplate"/>
+	<bean id="liveController" class="inu.sedn.controller.LiveController">
+		<property name="dao" ref="liveDAO"/>
+		<property name="webserver" value="${webserver}"/>
+		<property name="webserverIp" value="${webserverIp}"/>
+		<property name="mediaserver" value="${mediaserver}"/>
+		<property name="mediaserverIp" value="${mediaserverIp}"/>
+		<property name="mediaFtpUser" value="${mediaFtpUser}"/>
+		<property name="mediaFtpPw" value="${mediaFtpPw}"/>
+		<property name="pageSize" value="${pageSize}"/>
+		<property name="blockPage" value="${blockPage}"/>
+		<property name="webPath" value="${webPath}"/>
+		<property name="ftpPath" value="${ftpPath}"/>
+	</bean>
+	
+	<bean id="logDAO" class="inu.sedn.dao.LogDAO" p:sqlFactory-ref="sqlFactory" p:sqlTemplate-ref="sqlSessionTemplate"/>
+	<bean id="logController" class="inu.sedn.controller.LogController">
+		<property name="dao" ref="logDAO"/>
+	</bean>
+	
+	<bean id="boardDAO" class="inu.sedn.dao.BoardDAO" p:sqlFactory-ref="sqlFactory" p:sqlTemplate-ref="sqlSessionTemplate"/>
+	<bean id="boardController" class="inu.sedn.controller.BoardController">
+		<property name="dao" ref="boardDAO"/>
+	</bean>
+	
+	<bean id="settingDAO" class="inu.sedn.dao.SettingDAO" p:sqlFactory-ref="sqlFactory" p:sqlTemplate-ref="sqlSessionTemplate"/>
+	<bean id="settingController" class="inu.sedn.controller.SettingController">
+		<property name="dao" ref="settingDAO"/>
+	</bean>
+	
+	
+	<bean id="ottDAO" class="inu.sedn.dao.OttDAO" p:sqlFactory-ref="sqlFactoryOTT" p:sqlTemplate-ref="sqlSessionTemplateOTT"/>
+    <bean id="ottController" class="inu.sedn.controller.OttController">
+    	<property name="dao" ref="ottDAO"/>
+    </bean>
+</beans>

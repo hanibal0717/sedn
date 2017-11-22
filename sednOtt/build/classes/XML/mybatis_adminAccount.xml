@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+			PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+			"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="XML.mybatis_adminAccount">
+		<select id="id_check" resultType="int" parameterType="String">	
+		select count(admin_id) from tb_acount_admin where admin_id=#{admin_id} 
+		</select>
+	
+		<select id="pass_check" resultType="inu.sedn.model.AdminAccountDTO" parameterType="java.util.Map">	
+		select * from tb_acount_admin where admin_id=#{admin_id} AND admin_pass=#{admin_pass} 
+		</select>	
+		<select id="adminLists" resultType="inu.sedn.model.AdminAccountDTO" >	
+		select * from tb_acount_admin order by idx desc; 
+		</select>
+		<select id="sameId" resultType="int">	
+		select count(admin_id) from tb_acount_admin where admin_id=#{admin_id} 
+		</select>
+	
+		<insert id="adminInsert" parameterType="inu.sedn.model.AdminAccountDTO">
+		insert into tb_acount_admin(idx,admin_id,admin_pass)
+		values(null,#{admin_id},#{admin_pass})
+		</insert>
+	
+		<delete id="adminDelete" parameterType="String">
+		delete from tb_acount_admin where admin_id=#{admin_id}
+		</delete>
+</mapper>

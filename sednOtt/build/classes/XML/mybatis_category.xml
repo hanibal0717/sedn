@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+			PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+			"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="XML.mybatis_category">
+		<insert id="categoryInsert" parameterType="inu.sedn.model.CategoryDTO">
+			insert into tb_category_define(idx,categoryCode,categoryName,categoryDepth,categoryType,categoryAuth,categoryOpen)
+			values(null,#{categoryCode},#{categoryName},#{categoryDepth},#{categoryType},#{categoryAuth},#{categoryOpen})
+		</insert>
+		
+		<select id="headCode" resultType="String" parameterType="String">	
+			select ifnull(idx,0) from tb_category_define where categoryDepth=#{categoryDepth}
+		 	order by idx desc limit 0,1;  
+		</select>
+		
+		<select id="categoryLists" resultType="inu.sedn.model.CategoryDTO"  parameterType="java.util.Map">	
+			select * from tb_category_define where categoryDepth=#{categoryDepth}  
+			<if test='categoryCode != ""'>
+			and categoryCode like  concat(#{categoryCode},'%')
+			</if>	
+			order by idx asc; 
+		</select>
+		
+		<select id="categoryView" resultType="inu.sedn.model.CategoryDTO" parameterType="String">	
+			select * from tb_category_define where categoryCode=#{categoryCode}  
+		</select>
+		
+		<update id="categoryUpdate" parameterType="inu.sedn.model.CategoryDTO">
+			update tb_category_define set
+			categoryCode=#{categoryCode},
+			categoryName=#{categoryName},
+			categoryDepth=#{categoryDepth},
+			categoryType=#{categoryType},
+			categoryAuth=#{categoryAuth},
+			categoryOpen=#{categoryOpen}
+			where idx=#{idx}
+		</update>
+		
+		<delete id="categoryDelete" parameterType="String">
+		delete from tb_category_define where categoryCode=#{categoryCode}
+		</delete>
+		
+		<select id="selectCategoryName" resultType="String" parameterType="String">	
+			select categoryName from tb_category_define where categoryCode=#{categoryCode}
+		</select>
+		
+		<select id="selectCategoryIdx" resultType="String" parameterType="String">	
+			select idx from tb_category_define where categoryCode=#{categoryCode}
+		</select>
+</mapper>

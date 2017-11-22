@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+			PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+			"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="XML.mybatis_ott">
+	<select id="countVods" resultType="int" >
+		SELECT COUNT(VOD_IDX)
+			FROM TB_VOD_DATA
+			WHERE DEL_YN = 'N'
+	</select>
+	<select id="countSTBs" resultType="int">
+			SELECT COUNT(ID)
+			FROM TB_STB
+	</select>
+	<resultMap id="connectionStatResult" type="java.util.HashMap">
+		 <result javaType="java.lang.String" column="CONNECTED" property="CONNECTED"/>
+		 <result javaType="java.lang.String" column="DISCONNECTED" property="DISCONNECTED"/>
+	</resultMap>
+	<select id="connectionStat"  resultMap="connectionStatResult">
+			SELECT
+					COUNT(ID) AS CONNECTED
+					, ((SELECT COUNT(ID) FROM TB_STB) - COUNT(ID)) AS DISCONNECTED
+			FROM TB_STB
+			WHERE STATUS = 1 OR <![CDATA[TIMEDIFF(NOW(), LAST_PING_TIME) <= '00:01:10']]>
+	</select>
+</mapper>
